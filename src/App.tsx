@@ -14,57 +14,62 @@ function App() {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   async function initPixi() {
-    const app = new Application();
-    appRef.current = app;
+    try {
+      const app = new Application();
 
-    // Initialize the application
-    await app.init({
-      background: "#1099bb",
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
+      // Initialize the application
+      await app.init({
+        background: "#1099bb",
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
 
-    if (canvasRef.current) {
-      canvasRef.current.appendChild(app.canvas);
+      appRef.current = app;
+
+      if (canvasRef.current) {
+        canvasRef.current.appendChild(app.canvas);
+      }
+
+      // Append the application canvas to the document body
+      document.body.appendChild(app.canvas);
+
+      // Load the textures
+      // const sheet = await Assets.load("/spritesheet.json");
+      // const animation = await AnimatedSprite.from(sheet.animations["idle"]);
+
+      const alien1texture = await Assets.load("/ezgif-split/character000.png");
+      const alien2texture = await Assets.load("/ezgif-split/character001.png");
+
+      let isAlien1 = true;
+
+      // Create a new alien Sprite using the 1st texture and add it to the stage
+      const character = new Sprite(alien1texture);
+
+      // Center the sprites anchor point
+      character.anchor.set(0.5);
+
+      // Move the sprite to the center of the screen
+      character.x = app.screen.width / 2;
+      character.y = app.screen.height / 2;
+
+      app.stage.addChild(character);
+
+      // Make the sprite interactive
+      character.eventMode = "static";
+      character.cursor = "pointer";
+
+      character.on("pointertap", () => {
+        isAlien1 = !isAlien1;
+        // Dynamically swap the texture
+        character.texture = isAlien1 ? alien1texture : alien2texture;
+      });
+
+      app.ticker.add(() => {
+        character.rotation += 0.02;
+      });
+    } catch (error) {
+      console.error("Error initializing PixiJS:", error);
     }
-
-    // Append the application canvas to the document body
-    document.body.appendChild(app.canvas);
-
-    // Load the textures
-    const sheet = await Assets.load("/spritesheet.json");
-    const animation = await AnimatedSprite.from(sheet.animations["idle"]);
-
-    const alien1texture = await Assets.load("/ezgif-split/character000.png");
-    const alien2texture = await Assets.load("/ezgif-split/character001.png");
-
-    let isAlien1 = true;
-
-    // Create a new alien Sprite using the 1st texture and add it to the stage
-    const character = new Sprite(alien1texture);
-
-    // Center the sprites anchor point
-    character.anchor.set(0.5);
-
-    // Move the sprite to the center of the screen
-    character.x = app.screen.width / 2;
-    character.y = app.screen.height / 2;
-
-    app.stage.addChild(character);
-
-    // Make the sprite interactive
-    character.eventMode = "static";
-    character.cursor = "pointer";
-
-    character.on("pointertap", () => {
-      isAlien1 = !isAlien1;
-      // Dynamically swap the texture
-      character.texture = isAlien1 ? alien1texture : alien2texture;
-    });
-
-    app.ticker.add(() => {
-      character.rotation += 0.02;
-    });
   }
 
   useEffect(() => {
