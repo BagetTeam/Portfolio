@@ -12,16 +12,19 @@ function App() {
   const [count, setCount] = useState(0);
   const appRef = useRef<Application | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const isInitializing = useRef(false);
 
   async function initPixi() {
     try {
+      if (isInitializing.current || appRef.current) return; // Check both
+      isInitializing.current = true;
+
       const app = new Application();
 
       // Initialize the application
       await app.init({
         background: "#1099bb",
-        width: window.innerWidth,
-        height: window.innerHeight,
+        resizeTo: window,
       });
 
       appRef.current = app;
@@ -29,9 +32,6 @@ function App() {
       if (canvasRef.current) {
         canvasRef.current.appendChild(app.canvas);
       }
-
-      // Append the application canvas to the document body
-      document.body.appendChild(app.canvas);
 
       // Load the textures
       // const sheet = await Assets.load("/spritesheet.json");
@@ -69,6 +69,7 @@ function App() {
       });
     } catch (error) {
       console.error("Error initializing PixiJS:", error);
+      isInitializing.current = false;
     }
   }
 
@@ -81,19 +82,23 @@ function App() {
       if (appRef.current) {
         const app = appRef.current;
         app.destroy(true, { children: true, texture: true });
+        appRef.current = null;
+        isInitializing.current = false;
       }
     };
   }, []);
 
   return (
-    <div>
+    <div className="h-full w-full">
       <header className="absolute top-0 left-0 z-10 p-4 bg-white">
         <h1>Welcome to my portfolio</h1>
       </header>
-      <div
-        ref={canvasRef}
-        style={{ width: "100%", height: "100vh", position: "relative" }}
-      ></div>
+      <div className="w-full h-full items-center justify-items-center">
+        <div
+          ref={canvasRef}
+          style={{ width: "100%", height: "100vh", position: "relative" }}
+        ></div>
+      </div>
       <section
         id="experience"
         className="h-screen bg-blue-100 flex items-center justify-center"
