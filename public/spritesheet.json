@@ -1,0 +1,22 @@
+{
+  "frames": {
+    "idle_000.png": {
+      "frame": { "x": 0, "y": 0, "w": 150, "h": 130 }
+    },
+    "idle_001.png": {
+      "frame": { "x": 150, "y": 0, "w": 150, "h": 130 }
+    },
+    "walk_000.png": {
+      "frame": { "x": 0, "y": 130, "w": 150, "h": 130 }
+    }
+  },
+  "meta": {
+    "image": "full-animation.png",
+    "format": "RGBA8888",
+    "size": { "w": 640, "h": 512 }
+  },
+  "animations": {
+    "idle": ["idle_000.png", "idle_001.png"],
+    "walk": ["walk_000.png"]
+  }
+}
