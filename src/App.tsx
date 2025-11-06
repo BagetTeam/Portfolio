@@ -16,11 +16,19 @@ function App() {
   const isInitializing = useRef(false);
 
   const { scrollYProgress } = useScroll();
+  const maxTraversal = screen.width * 0.4;
 
-  const x = useTransform(
-    scrollYProgress,
-    (progress) => Math.sin(progress * Math.PI * 2 * 1.5) * (screen.width * 0.4)
-  );
+  function skiierMotion(progress: number) {
+    return Math.sin(progress * Math.PI * 2 * 1.5) * maxTraversal;
+  }
+
+  function skiierSlope(progress: number) {
+    return (
+      Math.cos(progress * Math.PI * 2 * 1.5) * maxTraversal * Math.PI * 2 * 1.5
+    );
+  }
+
+  const x = useTransform(scrollYProgress, skiierMotion);
 
   const scale = useTransform(scrollYProgress, [0, 1], [1, 10]);
 
@@ -73,20 +81,28 @@ function App() {
 
     app.stage.addChild(walkingAnimation);
 
-    walkingAnimation.eventMode = "static";
-    walkingAnimation.cursor = "pointer";
-    walkingAnimation.on("pointertap", () => {
-      forward = !forward;
-      if (forward) {
-        walkingAnimation.textures = sheet.animations.walk;
-      } else {
-        walkingAnimation.textures = sheet.animations.revWalk;
-      }
-      walkingAnimation.play();
-    });
+    // walkingAnimation.eventMode = "static";
+    // walkingAnimation.cursor = "pointer";
+    // walkingAnimation.on("pointertap", () => {
+    //   forward = !forward;
+    //   if (forward) {
+    //     walkingAnimation.textures = sheet.animations.walk;
+    //   } else {
+    //     walkingAnimation.textures = sheet.animations.revWalk;
+    //   }
+    //   walkingAnimation.play();
+    // });
     // Animate the rotation
     app.ticker.add(() => {
-      walkingAnimation.rotation += 0.01;
+      // walkingAnimation.rotation += 0.01;
+      const isForward = skiierSlope(scrollYProgress.get()) > 0;
+      if (isForward !== forward) {
+        forward = isForward;
+        walkingAnimation.textures = isForward
+          ? sheet.animations.walk
+          : sheet.animations.revWalk;
+        walkingAnimation.play();
+      }
     });
   }
 
