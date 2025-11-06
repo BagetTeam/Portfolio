@@ -8,14 +8,21 @@ import {
   Sprite,
   Texture,
 } from "pixi.js";
-import { motion, useScroll } from "motion/react";
+import { motion, MotionValue, useScroll, useTransform } from "motion/react";
 
 function App() {
-  const { scrollYProgress } = useScroll();
-
   const appRef = useRef<Application | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitializing = useRef(false);
+
+  const { scrollYProgress } = useScroll();
+
+  const x = useTransform(
+    scrollYProgress,
+    (progress) => Math.sin(progress * Math.PI * 2 * 1.5) * (screen.width * 0.4)
+  );
+
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 10]);
 
   async function initPixi() {
     try {
@@ -26,7 +33,7 @@ function App() {
 
       // Initialize the application
       await app.init({
-        background: "#1099bb",
+        backgroundAlpha: 0,
         resizeTo: window,
       });
 
@@ -133,32 +140,38 @@ function App() {
       <header className="absolute top-0 left-0 z-10 p-4 bg-white">
         <h1>Welcome to my portfolio</h1>
       </header>
-      <div className="w-full h-full items-center justify-items-center">
-        <motion.div
-          ref={canvasRef}
-          style={{
-            width: "100%",
-            height: "100vh",
-            position: "relative",
-            scale: scrollYProgress,
-          }}
-        ></motion.div>
-      </div>
+      <motion.div
+        ref={canvasRef}
+        style={{
+          top: "50%",
+          x: x,
+          y: "-50%",
+          width: "100%",
+          height: "100vh",
+          position: "fixed",
+          // scale: scale,
+          zIndex: 50,
+        }}
+      ></motion.div>
+
       <section
         id="experience"
-        className="h-screen bg-blue-100 flex items-center justify-center"
+        className="w-full h-screen bg-blue-100 flex items-center justify-center"
       >
-        <h2>Experience</h2>
+        <h2>
+          Experience asdawd a a diahiu dhadh aiwh diuah wdiuahw id hawiud
+          hawiudh uiah diuah iu h
+        </h2>
       </section>
       <section
         id="projects"
-        className="h-screen bg-green-100 flex items-center justify-center"
+        className="w-full h-screen bg-green-100 flex items-center justify-center"
       >
         <h2>Projects</h2>
       </section>
       <section
         id="education"
-        className="h-screen bg-yellow-100 flex items-center justify-center"
+        className="w-full h-screen bg-yellow-100 flex items-center justify-center"
       >
         <h2>Education</h2>
       </section>
