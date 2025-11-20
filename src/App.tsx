@@ -9,14 +9,42 @@ import {
   Texture,
 } from "pixi.js";
 import { motion, MotionValue, useScroll, useTransform } from "motion/react";
+import { dummyContent } from "./data/dummydata";
+
+const landmarks = [
+  {
+    id: "experience",
+    progress: 0.25, // Position along the path (0-1)
+    title: "Experience",
+    contentSize: 3, // Relative size (affects slowdown intensity)
+    color: "bg-blue-50",
+  },
+  {
+    id: "projects",
+    progress: 0.5,
+    title: "Projects",
+    contentSize: 5, // Larger content = more slowdown
+    color: "bg-green-50",
+  },
+  {
+    id: "education",
+    progress: 0.75,
+    title: "Education",
+    contentSize: 2,
+    color: "bg-yellow-50",
+  },
+];
 
 function App() {
   const appRef = useRef<Application | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitializing = useRef(false);
+  const currentLandmark = useState<string | null>(null);
 
-  const { scrollYProgress } = useScroll();
-  const maxTraversal = screen.width * 0.4;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef });
+  const maxTraversal =
+    typeof window !== "undefined" ? window.innerWidth * 0.35 : 400;
 
   function skiierMotion(progress: number) {
     return Math.sin(progress * Math.PI * 2 * 1.5) * maxTraversal;
