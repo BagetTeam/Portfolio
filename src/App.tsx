@@ -57,34 +57,41 @@ function App() {
   const isScrollingPopup = useRef(false);
 
   const maxTraversal =
-    typeof window !== "undefined" ? window.innerWidth * 0.25 : 300;
+    typeof window !== "undefined" ? window.innerWidth * 0.55 : 300;
 
-  function skiierMotion(progress: number) {
-    // Reduced horizontal amplitude for steeper descent
-    const mainCurve = Math.sin(progress * Math.PI * 3) * maxTraversal * 0.6;
+  function skierMotion(progress: number) {
+    const p = -2.6 * progress + 10;
+    console.log(progress);
+    const mainCurve =
+      Math.sin(2.6 * p * Math.PI + (5 * Math.PI) / 6) * maxTraversal * 0.6;
     const secondaryCurve =
-      Math.sin(progress * Math.PI * 2 - Math.PI / 3) * maxTraversal * 0.25;
-    const tertiaryWave = Math.sin(progress * Math.PI * 5) * maxTraversal * 0.08;
+      Math.sin(p * Math.PI - Math.PI / 3) * maxTraversal * 0.3;
+    const tertiaryWave = Math.sin(4 * p * Math.PI) * maxTraversal * 0.1;
 
     return mainCurve + secondaryCurve + tertiaryWave;
   }
 
-  function skiierSlope(progress: number) {
-    const derivative1 =
-      Math.cos(progress * Math.PI * 3) * maxTraversal * 0.6 * Math.PI * 3;
-    const derivative2 =
-      Math.cos(progress * Math.PI * 2 - Math.PI / 3) *
-      maxTraversal *
-      0.25 *
-      Math.PI *
-      2;
-    const derivative3 =
-      Math.cos(progress * Math.PI * 5) * maxTraversal * 0.08 * Math.PI * 5;
+  function skierSlope(progress: number) {
+    const p = -2.6 * progress + 10;
 
-    return derivative1 + derivative2 + derivative3;
+    const dMain =
+      Math.cos(2.6 * p * Math.PI + (5 * Math.PI) / 6) *
+      maxTraversal *
+      0.6 *
+      (2.6 * 2.6 * Math.PI);
+    const dSecondary =
+      Math.cos(p * Math.PI - Math.PI / 3) *
+      maxTraversal *
+      0.3 *
+      (2.6 * Math.PI);
+    const dTertiary =
+      Math.cos(4 * p * Math.PI) * maxTraversal * 0.1 * (2.6 * 4 * Math.PI);
+
+    return dMain + dSecondary + dTertiary;
   }
 
-  const x = useTransform(adjustedProgress, skiierMotion);
+  const x = useTransform(adjustedProgress, skierMotion);
+  console.log(x.get());
 
   function mapScrollToSkierProgress(rawProgress: number): number {
     const slowdownRange = 0.06; // Smaller range
@@ -307,7 +314,7 @@ function App() {
     // Animate the rotation
     app.ticker.add(() => {
       // walkingAnimation.rotation += 0.01;
-      const isForward = skiierSlope(scrollYProgress.get()) > 0;
+      const isForward = skierSlope(scrollYProgress.get()) > 0;
       if (isForward !== forward) {
         forward = isForward;
         walkingAnimation.textures = isForward
@@ -381,7 +388,7 @@ function App() {
           transition={{ duration: 0.4, ease: "easeOut" }}
           style={{
             pointerEvents: currentLandmark === landmark.id ? "auto" : "none",
-            maxHeight: "85vh",
+            maxHeight: "60vh",
             overflowY: "auto",
             width: "min(600px, 90vw)",
           }}
