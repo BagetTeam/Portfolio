@@ -19,8 +19,16 @@ import { dummyContent } from "./data/dummydata";
 
 const landmarks = [
   {
+    id: "about me",
+    progress: 0.15,
+    title: "About Me",
+    contentSize: 3,
+    color: "bg-orange-50",
+    side: "left" as const,
+  },
+  {
     id: "experience",
-    progress: 0.25,
+    progress: 0.3,
     title: "Experience",
     contentSize: 3,
     color: "bg-blue-50",
@@ -28,7 +36,7 @@ const landmarks = [
   },
   {
     id: "projects",
-    progress: 0.5,
+    progress: 0.6,
     title: "Projects",
     contentSize: 5,
     color: "bg-green-50",
@@ -57,7 +65,7 @@ function App() {
   const isScrollingPopup = useRef(false);
 
   const maxTraversal =
-    typeof window !== "undefined" ? window.innerWidth * 0.55 : 300;
+    typeof window !== "undefined" ? window.innerWidth * 0.35 : 300;
 
   function skierMotion(progress: number) {
     const p = -2.6 * progress + 10;
@@ -73,19 +81,17 @@ function App() {
 
   function skierSlope(progress: number) {
     const p = -2.6 * progress + 10;
+    const d = -2.6;
 
     const dMain =
       Math.cos(2.6 * p * Math.PI + (5 * Math.PI) / 6) *
       maxTraversal *
       0.6 *
-      (2.6 * 2.6 * Math.PI);
+      (d * 2.6 * Math.PI);
     const dSecondary =
-      Math.cos(p * Math.PI - Math.PI / 3) *
-      maxTraversal *
-      0.3 *
-      (2.6 * Math.PI);
+      Math.cos(p * Math.PI - Math.PI / 3) * maxTraversal * 0.3 * (d * Math.PI);
     const dTertiary =
-      Math.cos(4 * p * Math.PI) * maxTraversal * 0.1 * (2.6 * 4 * Math.PI);
+      Math.cos(4 * p * Math.PI) * maxTraversal * 0.1 * (d * 4 * Math.PI);
 
     return dMain + dSecondary + dTertiary;
   }
@@ -296,6 +302,7 @@ function App() {
 
     walkingAnimation.anchor.set(0.5);
     walkingAnimation.animationSpeed = 0.1;
+    walkingAnimation.scale = 0.6;
     walkingAnimation.play();
 
     app.stage.addChild(walkingAnimation);
