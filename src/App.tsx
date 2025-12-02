@@ -16,6 +16,9 @@ import {
   useTransform,
 } from "motion/react";
 import { dummyContent } from "./data/dummydata";
+import Experience from "./Experience";
+import Projects from "./Projects";
+import Education from "./Education";
 
 const landmarks = [
   {
@@ -405,117 +408,11 @@ function App() {
               {landmark.title}
             </h2>
 
-            {landmark.id === "experience" && (
-              <div className="space-y-8">
-                {dummyContent.experience.map((exp, idx) => (
-                  <div
-                    key={idx}
-                    className="border-l-4 border-blue-600 pl-6 py-2"
-                  >
-                    <h3 className="text-2xl font-bold text-gray-900">
-                      {exp.title}
-                    </h3>
-                    <p className="text-lg text-gray-700 font-semibold">
-                      {exp.company}
-                    </p>
-                    <p className="text-sm text-gray-600 mb-3">{exp.period}</p>
-                    <p className="text-gray-800 mb-4 leading-relaxed">
-                      {exp.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {exp.technologies.map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-4 py-2 bg-blue-600 text-white rounded font-semibold text-sm shadow-md hover:bg-blue-700 transition-colors"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            {landmark.id === "experience" && <Experience />}
 
-            {landmark.id === "projects" && (
-              <div className="space-y-8">
-                {dummyContent.projects.map((project, idx) => (
-                  <div
-                    key={idx}
-                    className="border-l-4 border-green-600 pl-6 py-2"
-                  >
-                    <h3 className="text-2xl font-bold text-gray-900">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-800 mb-4 leading-relaxed">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {project.technologies.map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-4 py-2 bg-green-600 text-white rounded font-semibold text-sm shadow-md hover:bg-green-700 transition-colors"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <a
-                      href={`https://${project.link}`}
-                      className="text-green-700 hover:text-green-900 font-semibold underline text-sm"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      🔗 {project.link}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
+            {landmark.id === "projects" && <Projects />}
 
-            {landmark.id === "education" && (
-              <div className="space-y-8">
-                {dummyContent.education.map((edu, idx) => (
-                  <div
-                    key={idx}
-                    className="border-l-4 border-yellow-600 pl-6 py-2"
-                  >
-                    <h3 className="text-2xl font-bold text-gray-900">
-                      {edu.degree}
-                    </h3>
-                    <p className="text-lg text-gray-700 font-semibold">
-                      {edu.institution}
-                    </p>
-                    {edu.period && (
-                      <p className="text-sm text-gray-600 mb-3">{edu.period}</p>
-                    )}
-                    {edu.gpa && (
-                      <p className="text-gray-800 font-semibold mb-3">
-                        GPA: {edu.gpa}
-                      </p>
-                    )}
-                    {edu.highlights && (
-                      <ul className="list-disc list-inside text-gray-800 space-y-2 ml-2">
-                        {edu.highlights.map((highlight, i) => (
-                          <li key={i} className="leading-relaxed">
-                            {highlight}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {edu.courses && (
-                      <ul className="list-disc list-inside text-gray-800 space-y-2 ml-2">
-                        {edu.courses.map((course, i) => (
-                          <li key={i} className="leading-relaxed">
-                            {course}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            {landmark.id === "education" && <Education />}
           </div>
         </motion.div>
       ))}
