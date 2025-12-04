@@ -78,3 +78,38 @@ export const dummyContent = {
     },
   ],
 };
+
+const landmarks = [
+  {
+    id: "about me",
+    progress: 0.15,
+    title: "About Me",
+    contentSize: 3,
+    color: "bg-orange-50",
+    side: "left" as const,
+  },
+  {
+    id: "experience",
+    progress: 0.3,
+    title: "Experience",
+    contentSize: 3,
+    color: "bg-blue-50",
+    side: "left" as const, // Skier approaches from right
+  },
+  {
+    id: "projects",
+    progress: 0.6,
+    title: "Projects",
+    contentSize: 5,
+    color: "bg-green-50",
+    side: "right" as const, // Skier approaches from left
+  },
+  {
+    id: "education",
+    progress: 0.75,
+    title: "Education",
+    contentSize: 2,
+    color: "bg-yellow-50",
+    side: "left" as const, // Skier approaches from right
+  },
+];

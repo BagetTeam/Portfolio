@@ -19,46 +19,23 @@ import { dummyContent } from "./data/dummydata";
 import Experience from "./Experience";
 import Projects from "./Projects";
 import Education from "./Education";
+import { type Landmark } from "./types";
 
-const landmarks = [
-  {
-    id: "about me",
-    progress: 0.15,
-    title: "About Me",
-    contentSize: 3,
-    color: "bg-orange-50",
-    side: "left" as const,
-  },
-  {
-    id: "experience",
-    progress: 0.3,
-    title: "Experience",
-    contentSize: 3,
-    color: "bg-blue-50",
-    side: "left" as const, // Skier approaches from right
-  },
-  {
-    id: "projects",
-    progress: 0.6,
-    title: "Projects",
-    contentSize: 5,
-    color: "bg-green-50",
-    side: "right" as const, // Skier approaches from left
-  },
-  {
-    id: "education",
-    progress: 0.75,
-    title: "Education",
-    contentSize: 2,
-    color: "bg-yellow-50",
-    side: "left" as const, // Skier approaches from right
-  },
+const criticalPointsSkip = [1, 4, 7];
+const landmarkTypes = ["aboutMe", "experience", "projects", "education"];
+const landmarkPosition: ("left" | "right")[] = [
+  "left",
+  "right",
+  "right",
+  "left",
 ];
+
 function App() {
   const appRef = useRef<Application | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitializing = useRef(false);
   const [currentLandmark, setCurrentLandmark] = useState<string | null>(null);
+  const [landmarks, setLandmarks] = useState<Landmark[]>([]);
 
   const popupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,6 +75,72 @@ function App() {
 
     return dMain + dSecondary + dTertiary;
   }
+
+  function findCriticalPoints(): number[] {
+    const criticalPoints: number[] = [];
+    const samples = 1000;
+
+    // Sample the slope function and find sign changes
+    for (let i = 0; i < samples - 1; i++) {
+      const progress1 = i / samples;
+      const progress2 = (i + 1) / samples;
+      const slope1 = skierSlope(progress1);
+      const slope2 = skierSlope(progress2);
+
+      // Sign change indicates a critical point
+      if (slope1 * slope2 < 0) {
+        let left = progress1;
+        let right = progress2;
+
+        // binary search a close approximation of the critical point
+        for (let j = 0; j < 20; j++) {
+          const mid = (left + right) / 2;
+          const slopeMid = skierSlope(mid);
+
+          if (Math.abs(slopeMid) < 0.0001) {
+            criticalPoints.push(mid);
+            break;
+          }
+
+          if (skierSlope(left) * slopeMid < 0) {
+            right = mid;
+          } else {
+            left = mid;
+          }
+        }
+      }
+    }
+
+    return criticalPoints;
+  }
+
+  function initLandmarks() {
+    const initLandmarks: Landmark[] = [];
+    const criticalPoints: number[] = findCriticalPoints();
+    console.log(criticalPoints);
+    let i = 0;
+    let j = 0;
+    for (const progress of criticalPoints) {
+      // skip these cuz i decided so
+      if (criticalPointsSkip.includes(++i)) continue;
+      console.log("Progress " + (j + 1) + ": " + progress);
+      const landmark: Landmark = {
+        id: landmarkTypes[j],
+        progress,
+        title: landmarkTypes[j],
+        side: landmarkPosition[j],
+      };
+      console.log(landmark);
+      initLandmarks.push(landmark);
+      j++;
+    }
+    setLandmarks(initLandmarks);
+  }
+
+  useEffect(() => {
+    initLandmarks();
+    console.log(landmarks);
+  }, []);
 
   const x = useTransform(adjustedProgress, skierMotion);
   console.log(x.get());
@@ -228,7 +271,8 @@ function App() {
 
       // Calculate new skier progress based on popup scroll
       // Speed is inversely proportional to content size
-      const speedFactor = 1 / landmark.contentSize;
+      // const speedFactor = 1 / landmark.contentSize;
+      const speedFactor = 1;
       const progressThroughLandmark = popupScrollProgress * speedFactor;
 
       const newSkierProgress = Math.min(
@@ -381,9 +425,7 @@ function App() {
           }}
           className={`fixed ${
             landmark.side === "left" ? "left-8" : "right-8"
-          } top-1/2 -translate-y-1/2 ${
-            landmark.color
-          } rounded-xl shadow-2xl p-8 max-w-3xl z-40 border-4 border-gray-800`}
+          } top-1/2 -translate-y-1/2 rounded-xl shadow-2xl p-8 max-w-3xl z-40 border-4 border-gray-800`}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{
             opacity: currentLandmark === landmark.id ? 1 : 0,
