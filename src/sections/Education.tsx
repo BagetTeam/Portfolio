@@ -1,4 +1,4 @@
-import { dummyContent } from "./data/dummydata";
+import { dummyContent } from "../data/dummydata";
 
 export default function Education() {
   return (

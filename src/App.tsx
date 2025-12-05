@@ -16,10 +16,11 @@ import {
   useTransform,
 } from "motion/react";
 import { dummyContent } from "./data/dummydata";
-import Experience from "./Experience";
-import Projects from "./Projects";
-import Education from "./Education";
+import Experience from "./sections/Experience";
+import Projects from "./sections/Projects";
+import Education from "./sections/Education";
 import { type Landmark } from "./types";
+import AboutMe from "./sections/AboutMe";
 
 const criticalPointsSkip = [1, 4, 7];
 const landmarkTypes = ["aboutMe", "experience", "projects", "education"];
@@ -28,6 +29,12 @@ const landmarkPosition: ("left" | "right")[] = [
   "right",
   "right",
   "left",
+];
+const landmarkComponent = [
+  <AboutMe />,
+  <Experience />,
+  <Projects />,
+  <Education />,
 ];
 
 function App() {
@@ -119,27 +126,24 @@ function App() {
     const criticalPoints: number[] = findCriticalPoints();
     console.log(criticalPoints);
     let i = 0;
-    let j = 0;
-    for (const progress of criticalPoints) {
-      // skip these cuz i decided so
-      if (criticalPointsSkip.includes(++i)) continue;
-      console.log("Progress " + (j + 1) + ": " + progress);
-      const landmark: Landmark = {
-        id: landmarkTypes[j],
+    criticalPoints.forEach((progress, index) => {
+      if (criticalPointsSkip.includes(index + 1)) return;
+
+      initLandmarks.push({
+        id: landmarkTypes[i],
         progress,
-        title: landmarkTypes[j],
-        side: landmarkPosition[j],
-      };
-      console.log(landmark);
-      initLandmarks.push(landmark);
-      j++;
-    }
+        title: landmarkTypes[i],
+        side: landmarkPosition[i],
+        component: landmarkComponent[i],
+      });
+      i++;
+      console.log(initLandmarks);
+    });
     setLandmarks(initLandmarks);
   }
 
   useEffect(() => {
     initLandmarks();
-    console.log(landmarks);
   }, []);
 
   const x = useTransform(adjustedProgress, skierMotion);
@@ -450,11 +454,7 @@ function App() {
               {landmark.title}
             </h2>
 
-            {landmark.id === "experience" && <Experience />}
-
-            {landmark.id === "projects" && <Projects />}
-
-            {landmark.id === "education" && <Education />}
+            {landmark.component}
           </div>
         </motion.div>
       ))}
