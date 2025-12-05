@@ -25,10 +25,10 @@ import AboutMe from "./sections/AboutMe";
 const criticalPointsSkip = [1, 4, 7];
 const landmarkTypes = ["aboutMe", "experience", "projects", "education"];
 const landmarkPosition: ("left" | "right")[] = [
-  "left",
-  "right",
   "right",
   "left",
+  "left",
+  "right",
 ];
 const landmarkComponent = [
   <AboutMe />,
@@ -52,7 +52,7 @@ function App() {
   const isScrollingPopup = useRef(false);
 
   const maxTraversal =
-    typeof window !== "undefined" ? window.innerWidth * 0.35 : 300;
+    typeof window !== "undefined" ? window.innerWidth * 0.2 : 300;
 
   function skierMotion(progress: number) {
     const p = -2.6 * progress + 10;
@@ -146,6 +146,10 @@ function App() {
     initLandmarks();
   }, []);
 
+  useEffect(() => {
+    console.log(landmarks);
+  }, [landmarks]);
+
   const x = useTransform(adjustedProgress, skierMotion);
   console.log(x.get());
 
@@ -160,7 +164,7 @@ function App() {
       start: number;
       end: number;
       cost: number;
-      landmark?: (typeof landmarks)[0];
+      landmark?: Landmark;
     }> = [];
 
     landmarks.forEach((landmark) => {
@@ -226,9 +230,9 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = adjustedProgress.on("change", (progress) => {
-      const activationRange = 0.08;
+      const activationRange = 0.04;
       let active = null;
-
+      console.log(landmarks);
       for (const landmark of landmarks) {
         if (
           progress >= landmark.progress - activationRange &&
@@ -238,12 +242,12 @@ function App() {
           break;
         }
       }
-
+      console.log(active);
       setCurrentLandmark(active);
     });
 
     return unsubscribe;
-  }, [adjustedProgress]);
+  }, [adjustedProgress, landmarks]);
 
   // Handle popup scroll
   useEffect(() => {
