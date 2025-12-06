@@ -15,78 +15,50 @@ import {
   useScroll,
   useTransform,
 } from "motion/react";
-import { dummyContent } from "./data/dummydata";
-import Experience from "./sections/Experience";
-import Projects from "./sections/Projects";
-import Education from "./sections/Education";
 import { type Landmark } from "./types";
-import AboutMe from "./sections/AboutMe";
-
-const criticalPointsSkip = [1, 4, 7];
-const landmarkTypes = ["aboutMe", "experience", "projects", "education"];
-const landmarkPosition: ("left" | "right")[] = [
-  "right",
-  "left",
-  "left",
-  "right",
-];
-const landmarkComponent = [
-  <AboutMe />,
-  <Experience />,
-  <Projects />,
-  <Education />,
-];
+import Header from "./components/Header";
+import { useLandmarks } from "./hooks/useLandmarks";
+import { useSkierMotion } from "./hooks/useSkierMotion";
+import { useActiveLandmark } from "./hooks/useActiveLandmarks";
+import { usePixiApp } from "./hooks/usePixi";
+import { usePopupScroll } from "./hooks/usePopupScroll";
 
 function App() {
-  const appRef = useRef<Application | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const isInitializing = useRef(false);
-  const [currentLandmark, setCurrentLandmark] = useState<string | null>(null);
-  const [landmarks, setLandmarks] = useState<Landmark[]>([]);
 
   const popupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const adjustedProgress = useMotionValue(0);
   const isScrollingPopup = useRef(false);
 
   const maxTraversal =
     typeof window !== "undefined" ? window.innerWidth * 0.2 : 300;
+  const { scrollYProgress } = useScroll({ target: containerRef });
+  const landmarks = useLandmarks(maxTraversal);
+  const { adjustedProgress, x } = useSkierMotion({
+    scrollYProgress,
+    landmarks,
+    maxTraversal,
+    isScrollingPopup,
+  });
 
-  useEffect(() => {
-    const landmarks = useLandmarks(maxTraversal);
-  }, []);
+  const currentLandmark = useActiveLandmark(adjustedProgress, landmarks);
 
-  useEffect(() => {
-    console.log(landmarks);
-  }, [landmarks]);
+  usePixiApp(canvasRef, scrollYProgress, maxTraversal);
+
+  usePopupScroll({
+    currentLandmark,
+    landmarks,
+    popupRefs,
+    containerRef,
+    adjustedProgress,
+    isScrollingPopup,
+  });
 
   const scale = useTransform(scrollYProgress, [0, 1], [1, 10]);
 
-  useEffect(() => {
-    if (appRef.current) return;
-
-    initPixi();
-
-    return () => {
-      if (appRef.current) {
-        const app = appRef.current;
-        app.destroy(true, { children: true, texture: true });
-        appRef.current = null;
-        isInitializing.current = false;
-      }
-    };
-  }, []);
-
   return (
     <div ref={containerRef} className="relative">
-      <header className="fixed top-0 left-0 z-10 p-6 bg-white/90 backdrop-blur shadow-md w-full">
-        <h1 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          My Creative Portfolio
-        </h1>
-      </header>
-
+      <Header />
       <motion.div
         ref={canvasRef}
         style={{
@@ -135,7 +107,7 @@ function App() {
               {landmark.title}
             </h2>
 
-            {landmark.component}
+            {landmark.component()}
           </div>
         </motion.div>
       ))}

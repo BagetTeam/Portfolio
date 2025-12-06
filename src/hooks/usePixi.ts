@@ -4,7 +4,7 @@ import { use, useEffect, useRef } from "react";
 import { skierSlope } from "../utils/skierMath";
 
 export async function usePixiApp(
-  canvasRef: React.RefObject<HTMLDivElement>,
+  canvasRef: React.RefObject<HTMLDivElement | null>,
   scrollYProgress: MotionValue<number>,
   maxTraversal: number
 ) {

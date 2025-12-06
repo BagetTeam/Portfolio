@@ -6,7 +6,7 @@ interface UsePopupScrollProps {
   currentLandmark: string | null;
   landmarks: Landmark[];
   popupRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   adjustedProgress: MotionValue<number>;
   isScrollingPopup: React.RefObject<boolean>;
 }
