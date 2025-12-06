@@ -1,6 +1,6 @@
 import type { Landmark } from "../types";
 
-export function skierMotion(progress: number, maxTraversal = 300): number {
+export function skierMotion(progress: number, maxTraversal: number): number {
   const p = -2.6 * progress + 10;
   console.log(progress);
   const mainCurve =
@@ -12,7 +12,7 @@ export function skierMotion(progress: number, maxTraversal = 300): number {
   return mainCurve + secondaryCurve + tertiaryWave;
 }
 
-export function skierSlope(progress: number, maxTraversal = 300): number {
+export function skierSlope(progress: number, maxTraversal: number): number {
   const p = -2.6 * progress + 10;
   const d = -2.6;
 
@@ -29,7 +29,7 @@ export function skierSlope(progress: number, maxTraversal = 300): number {
   return dMain + dSecondary + dTertiary;
 }
 
-export function findCriticalPoints(): number[] {
+export function findCriticalPoints(maxTraversal = 300): number[] {
   const criticalPoints: number[] = [];
   const samples = 1000;
 
@@ -37,8 +37,8 @@ export function findCriticalPoints(): number[] {
   for (let i = 0; i < samples - 1; i++) {
     const progress1 = i / samples;
     const progress2 = (i + 1) / samples;
-    const slope1 = skierSlope(progress1);
-    const slope2 = skierSlope(progress2);
+    const slope1 = skierSlope(progress1, maxTraversal);
+    const slope2 = skierSlope(progress2, maxTraversal);
 
     // Sign change indicates a critical point
     if (slope1 * slope2 < 0) {
@@ -48,14 +48,14 @@ export function findCriticalPoints(): number[] {
       // binary search a close approximation of the critical point
       for (let j = 0; j < 20; j++) {
         const mid = (left + right) / 2;
-        const slopeMid = skierSlope(mid);
+        const slopeMid = skierSlope(mid, maxTraversal);
 
         if (Math.abs(slopeMid) < 0.0001) {
           criticalPoints.push(mid);
           break;
         }
 
-        if (skierSlope(left) * slopeMid < 0) {
+        if (skierSlope(left, maxTraversal) * slopeMid < 0) {
           right = mid;
         } else {
           left = mid;
