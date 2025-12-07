@@ -8,8 +8,7 @@ import {
   Texture,
   TilingSprite,
 } from "pixi.js";
-import { Sprite3D } from "pixi3d";
-import { use, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { skierSlope } from "../utils/skierMath";
 
 export async function usePixiApp(
@@ -35,9 +34,12 @@ export async function usePixiApp(
 
         appRef.current = app;
 
-        if (canvasRef.current) {
-          canvasRef.current.appendChild(app.canvas);
-        }
+        requestAnimationFrame(() => {
+          if (canvasRef.current && app.canvas) {
+            console.log("PixiJS initialized");
+            canvasRef.current.appendChild(app.canvas);
+          }
+        });
 
         const backgroundLayer = new Container();
         const foregroundLayer = new Container();
@@ -74,7 +76,8 @@ export async function usePixiApp(
 }
 
 async function loadMountain(app: Application, layer: Container) {
-  const mountainBody = Texture.from("mountain-body.png");
+  const mountainBody = await Assets.load("/mountain-body.png");
+  console.log(mountainBody);
 
   const mountain = new PerspectiveMesh({
     texture: mountainBody,
@@ -93,7 +96,7 @@ async function loadMountain(app: Application, layer: Container) {
 
   // Position on screen
   mountain.position.set(300, 200);
-
+  // app.stage.addChild(mountain);
   layer.addChild(mountain);
 }
 
@@ -122,6 +125,7 @@ async function loadAnimation(
   walkingAnimation.play();
 
   layer.addChild(walkingAnimation);
+  // app.stage.addChild(walkingAnimation);
 
   app.ticker.add(() => {
     // walkingAnimation.rotation += 0.01;
