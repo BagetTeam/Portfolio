@@ -14,9 +14,12 @@ import { useSkierMotion } from "./hooks/useSkierMotion";
 import { useActiveLandmark } from "./hooks/useActiveLandmarks";
 import { usePixiApp } from "./hooks/usePixi";
 import { usePopupScroll } from "./hooks/usePopupScroll";
+import SkierCanvas from "./components/SkierCanvas";
+import MountainCanvas from "./components/MountainCanvas";
 
 function App() {
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const backgroundCanvasRef = useRef<HTMLDivElement>(null);
+  const skierCanvasRef = useRef<HTMLDivElement>(null);
 
   const popupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,7 +38,12 @@ function App() {
 
   const currentLandmark = useActiveLandmark(adjustedProgress, landmarks);
 
-  usePixiApp(canvasRef, scrollYProgress, maxTraversal);
+  usePixiApp(
+    backgroundCanvasRef,
+    skierCanvasRef,
+    scrollYProgress,
+    maxTraversal
+  );
 
   usePopupScroll({
     currentLandmark,
@@ -51,19 +59,8 @@ function App() {
   return (
     <div ref={containerRef} className="relative">
       <Header />
-      <motion.div
-        ref={canvasRef}
-        style={{
-          top: "50%",
-          x: x,
-          y: "-50%",
-          width: "100%",
-          height: "100vh",
-          position: "fixed",
-          zIndex: 50,
-          pointerEvents: "none",
-        }}
-      />
+      <MountainCanvas x={x} canvasRef={backgroundCanvasRef} />
+      <SkierCanvas x={x} canvasRef={skierCanvasRef} />
 
       {/* Landmark popups with dynamic positioning */}
       {landmarks.map((landmark) => (

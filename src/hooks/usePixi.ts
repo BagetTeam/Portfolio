@@ -12,70 +12,94 @@ import { useEffect, useRef } from "react";
 import { skierSlope } from "../utils/skierMath";
 
 export async function usePixiApp(
-  canvasRef: React.RefObject<HTMLDivElement | null>,
+  backgroundCanvasRef: React.RefObject<HTMLDivElement | null>,
+  skierCanvasRef: React.RefObject<HTMLDivElement | null>,
   scrollYProgress: MotionValue<number>,
   maxTraversal: number
 ) {
-  const appRef = useRef<Application | null>(null);
-  const isInitializing = useRef(false);
+  const backgroundAppRef = useRef<Application | null>(null);
+  const skierAppRef = useRef<Application | null>(null);
+  const isInitializingBackground = useRef(false);
+  const isInitializingSkier = useRef(false);
   useEffect(() => {
-    async function initPixi() {
+    async function initPixiBackground() {
       try {
-        if (isInitializing.current || appRef.current) return; // Check both
-        isInitializing.current = true;
-
+        if (isInitializingBackground.current || backgroundAppRef.current)
+          return;
+        isInitializingBackground.current = true;
         const app = new Application();
-
-        // Initialize the application
         await app.init({
           backgroundAlpha: 0,
           resizeTo: window,
         });
-
-        appRef.current = app;
-
+        backgroundAppRef.current = app;
         requestAnimationFrame(() => {
-          if (canvasRef.current && app.canvas) {
-            console.log("PixiJS initialized");
-            canvasRef.current.appendChild(app.canvas);
+          if (backgroundCanvasRef.current && app.canvas) {
+            console.log("PixiJS background initialized");
+            backgroundCanvasRef.current.appendChild(app.canvas);
           }
         });
 
-        const backgroundLayer = new Container();
-        const foregroundLayer = new Container();
+        await loadMountain(app);
+      } catch (error) {
+        console.error("Error initializing PixiJS:", error);
+      } finally {
+        isInitializingBackground.current = false;
+      }
+    }
 
-        app.stage.addChild(backgroundLayer, foregroundLayer);
+    async function initPixiSkier() {
+      try {
+        if (isInitializingSkier.current || skierAppRef.current) return; // Check both
+        isInitializingSkier.current = true;
 
-        await loadMountain(app, backgroundLayer);
-        await loadAnimation(
-          app,
-          foregroundLayer,
-          scrollYProgress,
-          maxTraversal
-        );
+        const appSkier = new Application();
+
+        // Initialize the application
+        await appSkier.init({
+          backgroundAlpha: 0,
+          resizeTo: window,
+        });
+
+        skierAppRef.current = appSkier;
+
+        requestAnimationFrame(() => {
+          if (skierCanvasRef.current && appSkier.canvas) {
+            console.log("PixiJS skier initialized");
+            skierCanvasRef.current.appendChild(appSkier.canvas);
+          }
+        });
+
+        await loadAnimation(appSkier, scrollYProgress, maxTraversal);
 
         // await loadSprite(app);
       } catch (error) {
         console.error("Error initializing PixiJS:", error);
       } finally {
-        isInitializing.current = false;
+        isInitializingSkier.current = false;
       }
     }
-    if (appRef.current) return;
-    initPixi();
+    if (!backgroundAppRef.current) initPixiBackground();
+    if (!skierAppRef.current) initPixiSkier();
 
     return () => {
-      if (appRef.current) {
-        const app = appRef.current;
+      if (backgroundAppRef.current) {
+        const app = backgroundAppRef.current;
         app.destroy(true, { children: true, texture: true });
-        appRef.current = null;
-        isInitializing.current = false;
+        backgroundAppRef.current = null;
+        isInitializingBackground.current = false;
+      }
+      if (skierAppRef.current) {
+        const app = skierAppRef.current;
+        app.destroy(true, { children: true, texture: true });
+        skierAppRef.current = null;
+        isInitializingSkier.current = false;
       }
     };
-  }, [canvasRef, scrollYProgress, maxTraversal]);
+  }, [skierCanvasRef, backgroundCanvasRef, scrollYProgress, maxTraversal]);
 }
 
-async function loadMountain(app: Application, layer: Container) {
+async function loadMountain(app: Application) {
   const mountainBody = await Assets.load("/mountain-body.png");
   console.log(mountainBody);
 
@@ -96,13 +120,12 @@ async function loadMountain(app: Application, layer: Container) {
 
   // Position on screen
   mountain.position.set(300, 200);
-  // app.stage.addChild(mountain);
-  layer.addChild(mountain);
+  app.stage.addChild(mountain);
+  // layer.addChild(mountain);
 }
 
 async function loadAnimation(
   app: Application,
-  layer: Container,
   scrollYProgress: MotionValue<number>,
   maxTraversal: number
 ) {
@@ -124,8 +147,8 @@ async function loadAnimation(
   walkingAnimation.scale = 0.6;
   walkingAnimation.play();
 
-  layer.addChild(walkingAnimation);
-  // app.stage.addChild(walkingAnimation);
+  // layer.addChild(walkingAnimation);
+  app.stage.addChild(walkingAnimation);
 
   app.ticker.add(() => {
     // walkingAnimation.rotation += 0.01;
