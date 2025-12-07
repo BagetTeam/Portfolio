@@ -1,14 +1,6 @@
 import { use, useEffect, useRef, useState } from "react";
 import "./index.css";
 import {
-  AnimatedSprite,
-  Application,
-  Assets,
-  Container,
-  Sprite,
-  Texture,
-} from "pixi.js";
-import {
   motion,
   MotionValue,
   useMotionValue,

@@ -1,5 +1,13 @@
 import type { MotionValue } from "motion/react";
-import { AnimatedSprite, Application, Assets } from "pixi.js";
+import {
+  AnimatedSprite,
+  Application,
+  Assets,
+  PerspectiveMesh,
+  Texture,
+  TilingSprite,
+} from "pixi.js";
+import { Sprite3D } from "pixi3d";
 import { use, useEffect, useRef } from "react";
 import { skierSlope } from "../utils/skierMath";
 
@@ -30,6 +38,7 @@ export async function usePixiApp(
           canvasRef.current.appendChild(app.canvas);
         }
 
+        await loadMountain(app);
         await loadAnimation(app, scrollYProgress, maxTraversal);
 
         // await loadSprite(app);
@@ -51,6 +60,30 @@ export async function usePixiApp(
       }
     };
   }, [canvasRef, scrollYProgress, maxTraversal]);
+}
+
+async function loadMountain(app: Application) {
+  const mountainBody = Texture.from("mountain-body.png");
+
+  const mountain = new PerspectiveMesh({
+    texture: mountainBody,
+    verticesX: 30,
+    verticesY: 30,
+    // Create a trapezoid that looks like a mountain
+    x0: 50,
+    y0: 300, // Wide base left
+    x1: 250,
+    y1: 300, // Wide base right
+    x2: 200,
+    y2: 100, // Narrower peak right
+    x3: 100,
+    y3: 100, // Narrower peak left
+  });
+
+  // Position on screen
+  mountain.position.set(300, 200);
+
+  app.stage.addChild(mountain);
 }
 
 async function loadAnimation(
