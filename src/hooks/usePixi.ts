@@ -3,6 +3,7 @@ import {
   AnimatedSprite,
   Application,
   Assets,
+  Container,
   PerspectiveMesh,
   Texture,
   TilingSprite,
@@ -38,8 +39,18 @@ export async function usePixiApp(
           canvasRef.current.appendChild(app.canvas);
         }
 
-        await loadMountain(app);
-        await loadAnimation(app, scrollYProgress, maxTraversal);
+        const backgroundLayer = new Container();
+        const foregroundLayer = new Container();
+
+        app.stage.addChild(backgroundLayer, foregroundLayer);
+
+        await loadMountain(app, backgroundLayer);
+        await loadAnimation(
+          app,
+          foregroundLayer,
+          scrollYProgress,
+          maxTraversal
+        );
 
         // await loadSprite(app);
       } catch (error) {
@@ -62,7 +73,7 @@ export async function usePixiApp(
   }, [canvasRef, scrollYProgress, maxTraversal]);
 }
 
-async function loadMountain(app: Application) {
+async function loadMountain(app: Application, layer: Container) {
   const mountainBody = Texture.from("mountain-body.png");
 
   const mountain = new PerspectiveMesh({
@@ -83,11 +94,12 @@ async function loadMountain(app: Application) {
   // Position on screen
   mountain.position.set(300, 200);
 
-  app.stage.addChild(mountain);
+  layer.addChild(mountain);
 }
 
 async function loadAnimation(
   app: Application,
+  layer: Container,
   scrollYProgress: MotionValue<number>,
   maxTraversal: number
 ) {
@@ -109,20 +121,8 @@ async function loadAnimation(
   walkingAnimation.scale = 0.6;
   walkingAnimation.play();
 
-  app.stage.addChild(walkingAnimation);
+  layer.addChild(walkingAnimation);
 
-  // walkingAnimation.eventMode = "static";
-  // walkingAnimation.cursor = "pointer";
-  // walkingAnimation.on("pointertap", () => {
-  //   forward = !forward;
-  //   if (forward) {
-  //     walkingAnimation.textures = sheet.animations.walk;
-  //   } else {
-  //     walkingAnimation.textures = sheet.animations.revWalk;
-  //   }
-  //   walkingAnimation.play();
-  // });
-  // Animate the rotation
   app.ticker.add(() => {
     // walkingAnimation.rotation += 0.01;
     const isForward = skierSlope(scrollYProgress.get(), maxTraversal) > 0;
