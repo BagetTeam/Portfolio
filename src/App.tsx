@@ -29,7 +29,7 @@ function App() {
     typeof window !== "undefined" ? window.innerWidth * 0.2 : 300;
   const { scrollYProgress } = useScroll({ target: containerRef });
   const landmarks = useLandmarks(maxTraversal);
-  const { adjustedProgress, x } = useSkierMotion({
+  const { adjustedProgress, x, isIdle } = useSkierMotion({
     scrollYProgress,
     landmarks,
     maxTraversal,
@@ -42,7 +42,8 @@ function App() {
     backgroundCanvasRef,
     skierCanvasRef,
     scrollYProgress,
-    maxTraversal
+    maxTraversal,
+    isIdle
   );
 
   usePopupScroll({

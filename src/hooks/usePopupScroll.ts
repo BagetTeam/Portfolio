@@ -19,7 +19,6 @@ export function usePopupScroll({
   adjustedProgress,
   isScrollingPopup,
 }: UsePopupScrollProps) {
-  // Handle popup scroll
   useEffect(() => {
     if (!currentLandmark) return;
 

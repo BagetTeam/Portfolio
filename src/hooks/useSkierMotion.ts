@@ -18,7 +18,7 @@ export function useSkierMotion({
 }: UseSkierMotionProps) {
   const adjustedProgress = useMotionValue(0);
   const [isIdle, setIsIdle] = useState(true);
-  const idleTimer = useRef<NodeJS.Timeout | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const x = useTransform(adjustedProgress, (progress) =>
     skierMotion(progress, maxTraversal)
@@ -29,11 +29,25 @@ export function useSkierMotion({
       if (!isScrollingPopup.current) {
         const mapped = mapScrollToSkierProgress(scroll, landmarks);
         adjustedProgress.set(mapped);
+
+        setIsIdle(false);
+
+        if (idleTimer.current) {
+          clearTimeout(idleTimer.current);
+        }
+        idleTimer.current = setTimeout(() => {
+          setIsIdle(true);
+        }, 3000);
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (idleTimer.current) {
+        clearTimeout(idleTimer.current);
+      }
+    };
   }, [scrollYProgress, adjustedProgress, landmarks, isScrollingPopup]);
 
-  return { adjustedProgress, x };
+  return { adjustedProgress, x, isIdle };
 }

@@ -15,7 +15,8 @@ export async function usePixiApp(
   backgroundCanvasRef: React.RefObject<HTMLDivElement | null>,
   skierCanvasRef: React.RefObject<HTMLDivElement | null>,
   scrollYProgress: MotionValue<number>,
-  maxTraversal: number
+  maxTraversal: number,
+  isIdle: boolean = false
 ) {
   const backgroundAppRef = useRef<Application | null>(null);
   const skierAppRef = useRef<Application | null>(null);
@@ -70,7 +71,7 @@ export async function usePixiApp(
           }
         });
 
-        await loadAnimation(appSkier, scrollYProgress, maxTraversal);
+        await loadAnimation(appSkier, scrollYProgress, maxTraversal, isIdle);
 
         // await loadSprite(app);
       } catch (error) {
@@ -127,7 +128,8 @@ async function loadMountain(app: Application) {
 async function loadAnimation(
   app: Application,
   scrollYProgress: MotionValue<number>,
-  maxTraversal: number
+  maxTraversal: number,
+  isIdle: boolean
 ) {
   Assets.add({
     alias: "sheet",
@@ -135,30 +137,31 @@ async function loadAnimation(
   });
   const sheet = await Assets.load("sheet");
 
+  const idleAnimation = new AnimatedSprite(sheet.animations.idle);
   const walkingAnimation = new AnimatedSprite(sheet.animations.walk);
+
+  const animation = isIdle ? idleAnimation : walkingAnimation;
 
   let forward = true;
 
-  walkingAnimation.x = app.screen.width / 2;
-  walkingAnimation.y = app.screen.height / 2;
-
-  walkingAnimation.anchor.set(0.5);
-  walkingAnimation.animationSpeed = 0.1;
-  walkingAnimation.scale = 0.6;
-  walkingAnimation.play();
-
-  // layer.addChild(walkingAnimation);
-  app.stage.addChild(walkingAnimation);
+  animation.x = app.screen.width / 2;
+  animation.y = app.screen.height / 2;
+  animation.anchor.set(0.5);
+  animation.animationSpeed = 0.1;
+  animation.scale = 0.6;
+  animation.play();
+  app.stage.addChild(animation);
 
   app.ticker.add(() => {
     // walkingAnimation.rotation += 0.01;
     const isForward = skierSlope(scrollYProgress.get(), maxTraversal) > 0;
-    if (isForward !== forward) {
+    if (isIdle) animation.textures = sheet.animations.idle;
+    else if (isForward !== forward) {
       forward = isForward;
-      walkingAnimation.textures = isForward
+      animation.textures = isForward
         ? sheet.animations.walk
         : sheet.animations.revWalk;
-      walkingAnimation.play();
+      animation.play();
     }
   });
 }
