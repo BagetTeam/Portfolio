@@ -30,7 +30,7 @@ export function useSkierMotion({
         const mapped = mapScrollToSkierProgress(scroll, landmarks);
         adjustedProgress.set(mapped);
 
-        setIsIdle(false);
+        if (isIdle) setIsIdle(false);
 
         if (idleTimer.current) {
           clearTimeout(idleTimer.current);
