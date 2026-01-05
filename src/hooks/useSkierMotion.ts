@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMotionValue, useTransform, MotionValue } from "motion/react";
 import { skierMotion, mapScrollToSkierProgress } from "../utils/skierMath";
 import { type Landmark } from "../types";
@@ -17,6 +17,8 @@ export function useSkierMotion({
   isScrollingPopup,
 }: UseSkierMotionProps) {
   const adjustedProgress = useMotionValue(0);
+  const [isIdle, setIsIdle] = useState(true);
+  const idleTimer = useRef<NodeJS.Timeout | null>(null);
 
   const x = useTransform(adjustedProgress, (progress) =>
     skierMotion(progress, maxTraversal)
