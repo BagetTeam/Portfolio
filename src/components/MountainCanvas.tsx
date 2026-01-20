@@ -52,10 +52,10 @@ export default function MountainCanvas({ x, canvasRef }: MountainCanvasProps) {
             position: "absolute",
             top: 0,
             left: "50%",
-            width: "150%",
-            height: "300%", // Very tall to extend into the distance
-            transform: "translateX(-50%) rotateX(70deg)",
-            transformOrigin: "center 33%", // Rotation point at the "horizon"
+            width: "60%",
+            height: "700%", // Very tall to extend into the distance
+            transform: "translateX(-50%) rotateX(20deg)",
+            transformOrigin: "center 4%", // Rotation point at the "horizon"
             transformStyle: "preserve-3d",
             overflow: "hidden",
           }}
