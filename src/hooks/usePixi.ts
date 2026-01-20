@@ -3,10 +3,6 @@ import {
   AnimatedSprite,
   Application,
   Assets,
-  Container,
-  PerspectiveMesh,
-  Texture,
-  TilingSprite,
 } from "pixi.js";
 import { useEffect, useRef } from "react";
 import { skierSlope } from "../utils/skierMath";
@@ -41,7 +37,7 @@ export async function usePixiApp(
           }
         });
 
-        await loadMountain(app);
+        // Mountain is now rendered via CSS in MountainCanvas component
       } catch (error) {
         console.error("Error initializing PixiJS:", error);
       } finally {
@@ -98,31 +94,6 @@ export async function usePixiApp(
       }
     };
   }, [skierCanvasRef, backgroundCanvasRef, scrollYProgress, maxTraversal]);
-}
-
-async function loadMountain(app: Application) {
-  const mountainBody = await Assets.load("/mountain-body.png");
-  console.log(mountainBody);
-
-  const mountain = new PerspectiveMesh({
-    texture: mountainBody,
-    verticesX: 30,
-    verticesY: 30,
-    // Create a trapezoid that looks like a mountain
-    x0: 50,
-    y0: 300, // Wide base left
-    x1: 250,
-    y1: 300, // Wide base right
-    x2: 200,
-    y2: 100, // Narrower peak right
-    x3: 100,
-    y3: 100, // Narrower peak left
-  });
-
-  // Position on screen
-  mountain.position.set(300, 200);
-  app.stage.addChild(mountain);
-  // layer.addChild(mountain);
 }
 
 async function loadAnimation(
