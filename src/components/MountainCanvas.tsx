@@ -8,15 +8,13 @@ interface MountainCanvasProps {
 
 export default function MountainCanvas({ x, canvasRef }: MountainCanvasProps) {
   const { scrollYProgress } = useScroll();
-  
-  // The texture scrolls as user scrolls the page
-  // Scrolls the texture upward as user scrolls down
+
   const textureOffsetY = useTransform(scrollYProgress, [0, 1], ["0%", "-70%"]);
 
   return (
     <>
       {/* Original canvas ref for Pixi.js (keeping for compatibility) */}
-      <div
+      {/* <div
         ref={canvasRef}
         style={{
           top: "50%",
@@ -26,8 +24,8 @@ export default function MountainCanvas({ x, canvasRef }: MountainCanvasProps) {
           zIndex: 25,
           pointerEvents: "none",
         }}
-      />
-      
+      /> */}
+
       {/* Mountain background with true 3D perspective effect */}
       <div
         className="mountain-perspective-container"
