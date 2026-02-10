@@ -16,6 +16,7 @@ import { usePixiApp } from "./hooks/usePixi";
 import { usePopupScroll } from "./hooks/usePopupScroll";
 import SkierCanvas from "./components/SkierCanvas";
 import MountainCanvas from "./components/MountainCanvas";
+import { useScrollLock } from "./hooks/useScrollLock";
 
 function App() {
   const backgroundCanvasRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,9 @@ function App() {
 
   const popupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { lockScroll, unlockScroll } = useScrollLock();
+  const hasLocked = useRef(false);
   const isScrollingPopup = useRef(false);
 
   const maxTraversal =
@@ -43,7 +47,7 @@ function App() {
     skierCanvasRef,
     scrollYProgress,
     maxTraversal,
-    isIdle
+    isIdle,
   );
 
   usePopupScroll({
@@ -54,6 +58,22 @@ function App() {
     adjustedProgress,
     isScrollingPopup,
   });
+
+  useEffect(() => {
+    if (!hasLocked.current) {
+      lockScroll();
+      hasLocked.current = true;
+
+      const timer = setTimeout(() => {
+        unlockScroll();
+      }, 5000);
+
+      return () => {
+        clearTimeout(timer);
+        unlockScroll();
+      };
+    }
+  }, [lockScroll, unlockScroll]);
 
   const scale = useTransform(scrollYProgress, [0, 1], [1, 10]);
 
@@ -80,8 +100,8 @@ function App() {
               currentLandmark === landmark.id
                 ? 0
                 : landmark.side === "left"
-                ? -100
-                : 100,
+                  ? -100
+                  : 100,
             scale: currentLandmark === landmark.id ? 1 : 0.9,
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -112,13 +132,9 @@ function App() {
         </div>
       </section>
 
-      <section className="w-full min-h-[200vh] bg-gradient-to-b from-blue-300 via-blue-200 to-cyan-300"></section>
+      <section className="w-full min-h-[700vh]"></section>
 
-      <section className="w-full min-h-[300vh] bg-gradient-to-b from-cyan-300 via-cyan-200 to-green-300"></section>
-
-      <section className="w-full min-h-[200vh] bg-gradient-to-b from-green-300 via-green-200 to-emerald-300"></section>
-
-      <section className="w-full min-h-screen flex items-center justify-center bg-gradient-to-b from-emerald-300 to-teal-400">
+      <section className="w-full min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-6xl font-bold text-gray-900 mb-4">
             End of Journey
