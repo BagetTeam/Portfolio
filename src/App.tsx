@@ -60,18 +60,18 @@ function App() {
   });
 
   useEffect(() => {
+    console.log(hasLocked.current);
     if (!hasLocked.current) {
       lockScroll();
+      console.log("locked");
       hasLocked.current = true;
 
       const timer = setTimeout(() => {
         unlockScroll();
+        console.log("unlocked");
       }, 5000);
 
-      return () => {
-        clearTimeout(timer);
-        unlockScroll();
-      };
+      return () => {};
     }
   }, [lockScroll, unlockScroll]);
 
