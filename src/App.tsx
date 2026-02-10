@@ -60,13 +60,19 @@ function App() {
   });
 
   useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    window.scrollTo(0, 0);
+
     console.log(hasLocked.current);
     if (!hasLocked.current) {
       lockScroll();
       console.log("locked");
       hasLocked.current = true;
 
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         unlockScroll();
         console.log("unlocked");
       }, 5000);
