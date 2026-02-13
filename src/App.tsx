@@ -81,14 +81,10 @@ function App() {
       useGSAP(() => {
         // gsap code here...
         gsap.to(".box", {
-          opacity:1, 
-          scaleX:1, 
-          scaleY:1,
-          width:300, 
-          height:250, 
-          transformOrigin:"center", 
-          marginTop:0, 
-          ease:Power1.easeIn
+          oscale: 1.5, // or scaleX: 1.5, scaleY: 1.5
+          transformOrigin: "center",
+          ease: Power1.easeIn,
+          duration: 1
         }); 
       }, { scope: container });
 
