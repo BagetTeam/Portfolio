@@ -44,6 +44,7 @@ function App() {
 
   const currentLandmark = useActiveLandmark(adjustedProgress, landmarks);
 
+  // skier canvas
   usePixiApp(
     backgroundCanvasRef,
     skierCanvasRef,
@@ -61,14 +62,13 @@ function App() {
     isScrollingPopup,
   });
 
+  // initial lock/unlock scroll
   useEffect(() => {
-    // have scroll be at the top
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
     window.scrollTo(0, 0);
 
-    // lock scroll for initial animation
     if (!hasLocked.current) {
       lockScroll();
       hasLocked.current = true;
@@ -76,6 +76,7 @@ function App() {
       setTimeout(() => {
         unlockScroll();
         setIsInitialAnimation(false);
+        console.log("unlocked");
       }, 5000);
 
       return () => {};
@@ -87,7 +88,6 @@ function App() {
   return (
     <div className={`${isInitialAnimation ? "hidden" : ""}`}>
       <div ref={containerRef} className="relative">
-        <Header />
         <MountainCanvas x={x} canvasRef={backgroundCanvasRef} />
         <SkierCanvas x={x} canvasRef={skierCanvasRef} />
 
