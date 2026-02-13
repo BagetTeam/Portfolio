@@ -17,6 +17,8 @@ import { usePopupScroll } from "./hooks/usePopupScroll";
 import SkierCanvas from "./components/SkierCanvas";
 import MountainCanvas from "./components/MountainCanvas";
 import { useScrollLock } from "./hooks/useScrollLock";
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 function App() {
   const maxTraversal =
@@ -72,6 +74,18 @@ function App() {
     if (!hasLocked.current) {
       lockScroll();
       hasLocked.current = true;
+
+      useGSAP(() => {
+        // gsap code here...
+        gsap.to(".box", {
+          opacity:1, 
+          scaleX:1, 
+          scaleY:1,
+          width:300, 
+          height:250, 
+          transformOrigin:"center", 
+          marginTop:0, 
+          ease:Power1.easeIn});
 
       setTimeout(() => {
         unlockScroll();
