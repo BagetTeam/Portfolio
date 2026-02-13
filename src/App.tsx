@@ -88,9 +88,9 @@ function App() {
           height:250, 
           transformOrigin:"center", 
           marginTop:0, 
-          ease:Power1.easeIn},); 
-          { scope: container }}
-        );
+          ease:Power1.easeIn
+        }); 
+      }, { scope: container });
 
       setTimeout(() => {
         unlockScroll();
