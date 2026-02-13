@@ -32,6 +32,9 @@ function App() {
   const hasLocked = useRef(false);
   const isScrollingPopup = useRef(false);
 
+
+  const container = useRef<HTMLDivElement>(null);
+
   const [isInitialAnimation, setIsInitialAnimation] = useState(true);
 
   const { lockScroll, unlockScroll } = useScrollLock();
@@ -85,7 +88,9 @@ function App() {
           height:250, 
           transformOrigin:"center", 
           marginTop:0, 
-          ease:Power1.easeIn});
+          ease:Power1.easeIn},); 
+          { scope: container }}
+        );
 
       setTimeout(() => {
         unlockScroll();
@@ -102,7 +107,7 @@ function App() {
   return (
     <>
       {/* This initial scenery */}
-      <div className={`${isInitialAnimation ? "" : "hidden"} `}>
+      <div className={`${isInitialAnimation ? "" : "hidden"} `} ref={container}>
         <img
           src="/mountain-landscape.jpg"
           className="absolute top-0 left-0 w-full h-full object-cover"
