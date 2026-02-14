@@ -80,8 +80,8 @@ function App() {
 
       useGSAP(() => {
         // gsap code here...
-        gsap.to(".box", {
-          oscale: 1.5, // or scaleX: 1.5, scaleY: 1.5
+        gsap.to(container.current, {
+          scale: 1.5, // or scaleX: 1.5, scaleY: 1.5
           transformOrigin: "center",
           ease: Power1.easeIn,
           duration: 1
@@ -103,7 +103,7 @@ function App() {
   return (
     <>
       {/* This initial scenery */}
-      <div className={`${isInitialAnimation ? "" : "hidden"} `} ref={container}>
+      <div className={`${isInitialAnimation ? "" : "hidden"} relative h-full w-full`} ref={container}>
         <img
           src="/mountain-landscape.jpg"
           className="absolute top-0 left-0 w-full h-full object-cover"
