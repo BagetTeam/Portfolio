@@ -17,8 +17,8 @@ import { usePopupScroll } from "./hooks/usePopupScroll";
 import SkierCanvas from "./components/SkierCanvas";
 import MountainCanvas from "./components/MountainCanvas";
 import { useScrollLock } from "./hooks/useScrollLock";
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 function App() {
   const maxTraversal =
@@ -31,7 +31,6 @@ function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasLocked = useRef(false);
   const isScrollingPopup = useRef(false);
-
 
   const container = useRef<HTMLDivElement>(null);
 
@@ -67,6 +66,18 @@ function App() {
     isScrollingPopup,
   });
 
+  useGSAP(
+    () => {
+      gsap.to(container.current, {
+        scale: 5,
+        transformOrigin: "center",
+        ease: "power4.inOut",
+        duration: 5,
+      });
+    },
+    { scope: container },
+  );
+
   // initial lock/unlock scroll
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -77,16 +88,6 @@ function App() {
     if (!hasLocked.current) {
       lockScroll();
       hasLocked.current = true;
-
-      useGSAP(() => {
-        // gsap code here...
-        gsap.to(container.current, {
-          scale: 1.5, // or scaleX: 1.5, scaleY: 1.5
-          transformOrigin: "center",
-          ease: Power1.easeIn,
-          duration: 1
-        }); 
-      }, { scope: container });
 
       setTimeout(() => {
         unlockScroll();
@@ -103,7 +104,10 @@ function App() {
   return (
     <>
       {/* This initial scenery */}
-      <div className={`${isInitialAnimation ? "" : "hidden"} relative h-full w-full`} ref={container}>
+      <div
+        className={`${isInitialAnimation ? "" : "hidden"} relative h-full w-full`}
+        ref={container}
+      >
         <img
           src="/mountain-landscape.jpg"
           className="absolute top-0 left-0 w-full h-full object-cover"
