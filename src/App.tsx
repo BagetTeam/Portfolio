@@ -32,7 +32,8 @@ function App() {
   const hasLocked = useRef(false);
   const isScrollingPopup = useRef(false);
 
-  const container = useRef<HTMLDivElement>(null);
+  const initialBackgroundRef = useRef<HTMLDivElement>(null);
+  const imageBackgroundRef = useRef<HTMLImageElement>(null);
 
   const [isInitialAnimation, setIsInitialAnimation] = useState(true);
 
@@ -66,16 +67,33 @@ function App() {
     isScrollingPopup,
   });
 
+  const baseScale = Math.floor(
+    Math.max(
+      window.innerWidth / 315,
+      window.innerHeight / 140
+    )
+  );
+
   useGSAP(
     () => {
-      gsap.to(container.current, {
-        scale: 5,
-        transformOrigin: "center",
+      gsap.fromTo(
+      imageBackgroundRef.current,
+      {
+        scale: baseScale,
+        xPercent: -50,
+        yPercent: -50,
+      },
+      {
+        scale: baseScale * 5,
+        xPercent: -50,
+        yPercent: -50,
+        transformOrigin: "center center",
         ease: "power4.inOut",
         duration: 5,
-      });
+      }
+    );
     },
-    { scope: container },
+    { scope: imageBackgroundRef },
   );
 
   // initial lock/unlock scroll
@@ -106,11 +124,12 @@ function App() {
       {/* This initial scenery */}
       <div
         className={`${isInitialAnimation ? "" : "hidden"} relative h-full w-full`}
-        ref={container}
+        ref={initialBackgroundRef}
       >
         <img
-          src="/mountain-landscape.jpg"
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          ref={imageBackgroundRef}
+          src="/mountain_initial.png"
+          className="absolute top-1/2 left-1/2 [image-rendering:pixelated]"
         />
       </div>
       <div className={`${isInitialAnimation ? "hidden" : ""}`}>
