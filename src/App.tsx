@@ -67,33 +67,57 @@ function App() {
     isScrollingPopup,
   });
 
-  const baseScale = Math.floor(
+  const baseScale = Math.ceil(
     Math.max(
       window.innerWidth / 315,
-      window.innerHeight / 140
+      window.innerHeight / 180
     )
   );
 
+  const skierInitialRef = useRef<HTMLImageElement>(null);
+
   useGSAP(
     () => {
+      // Mountain zoom animation
       gsap.fromTo(
-      imageBackgroundRef.current,
-      {
-        scale: baseScale,
-        xPercent: -50,
-        yPercent: -50,
-      },
-      {
-        scale: baseScale * 5,
-        xPercent: -50,
-        yPercent: -50,
-        transformOrigin: "center center",
-        ease: "power4.inOut",
-        duration: 5,
-      }
-    );
+        imageBackgroundRef.current,
+        {
+          scale: baseScale,
+          xPercent: -50,
+          yPercent: -50,
+          transformOrigin: "52% 40%",
+        },
+        {
+          scale: baseScale * 20,
+          xPercent: -50,
+          yPercent: -50,
+          transformOrigin: "52% 40%",
+          ease: "power4.inOut",
+          duration: 5,
+        }
+      );
+
+      // Skier character animation - scales at same 20x rate as mountain
+      gsap.fromTo(
+        skierInitialRef.current,
+        {
+          scale: 0.75,
+          opacity: 0,
+          xPercent: -50,
+          yPercent: -50,
+        },
+        {
+          scale: 15,
+          opacity: 1,
+          xPercent: -50,
+          yPercent: -50,
+          ease: "power4.inOut",
+          duration: 4,
+          delay: 1,
+        }
+      );
     },
-    { scope: imageBackgroundRef },
+    { scope: initialBackgroundRef },
   );
 
   // initial lock/unlock scroll
@@ -123,13 +147,18 @@ function App() {
     <>
       {/* This initial scenery */}
       <div
-        className={`${isInitialAnimation ? "" : "hidden"} relative h-full w-full`}
+        className={`${isInitialAnimation ? "" : "hidden"} relative h-full w-full overflow-hidden`}
         ref={initialBackgroundRef}
       >
         <img
           ref={imageBackgroundRef}
           src="/mountain_initial.png"
           className="absolute top-1/2 left-1/2 [image-rendering:pixelated]"
+        />
+        <img
+          ref={skierInitialRef}
+          src="/skier_front_128.png"
+          className="absolute top-1/2 left-1/2 [image-rendering:pixelated] z-10"
         />
       </div>
       <div className={`${isInitialAnimation ? "hidden" : ""}`}>
